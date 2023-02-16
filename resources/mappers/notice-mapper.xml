@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="NoticeMapper">
+	<resultMap type="notice.model.vo.Notice" id="noticeResultMap">
+	<id 	property="noticeNo" column="NOTICE_NO"/>
+	<result property="noticeSubject" column="NOTICE_SUBJECT"/>
+	<result property="noticeContent" column="NOTICE_CONTENT"/>
+	<result property="noticeWriter" column="NOTICE_WRITER"/>
+	<result property="noticeDate" column="NOTICE_DATE"/>
+	<result property="viewCount" column="VIEW_COUNT"/>
+	</resultMap>
+	<insert id="insertNotice" parameterType="notice.model.vo.Notice">
+		INSERT INTO NOTICE_TBL VALUES(SEQ_NOTICENO.NEXTVAL, 공지사항입니다. #{noticeSubject}, #{noticeContent}, #{noticeWriter}, DEFAULT, DEFAULT)
+<!-- 		getter메소드 쓰지 않고 #{ } vo에있는 멤버변수명을 써주면 getter메소드 같이 동작함 -->
+	</insert>
+	<update id="updateNotice">
+		UPDATE NOTICE_TBL SET NOTICE_SUBJECT = #{noticeSubject}, NOTICE_CONTENT = #{noticeContent} WHERE NOTICE_NO = #{noticeNo }
+	</update>
+	<delete id="deleteNotice">
+		DELETE FROM NOTICE_TBL WHERE NOTICE_NO = #{noticeNo }
+	</delete>
+	<select id="selectAllNotice" parameterType="notice.model.vo.Pagenation" resultMap="noticeResultMap">
+		SELECT * FROM (SELECT ROW_NUMBER() OVER(ORDER BY NOTICE_NO DESC) AS NUM, NOTICE_TBL.* FROM NOTICE_TBL) WHERE NUM BETWEEN #{start} AND #{end}
+	</select>
+	<select id="selectTotalCount" resultType="_int">
+		SELECT COUNT(*) FROM NOTICE_TBL
+	</select>
+	<select id="selectOneByNo" parameterType="_int" resultMap="noticeResultMap">
+		SELECT * FROM NOTICE_TBL WHERE NOTICE_NO = #{noticeNo }
+	</select>
+</mapper>
